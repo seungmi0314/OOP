@@ -17,7 +17,7 @@ public class Member {
 	
 
 		public Member(String memberId, String memberPw, String memberName, int memberAge) {
-		super();
+		
 		this.memberId = memberId;
 		this.memberPw = memberPw;
 		this.memberName = memberName;
@@ -25,7 +25,7 @@ public class Member {
 	}
 
 	//메서드
-	public Member() {}
+	public Member() {} // 기본 생성자 위치가 주는 영향이 있는건가? => 상관없는데 보통 맨 위에 적어줌
 
 	public String getMemberId() {
 				// get + 카멜

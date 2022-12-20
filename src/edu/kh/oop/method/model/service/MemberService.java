@@ -9,7 +9,7 @@ public class MemberService { //클래스
 	// 필드는 기본적으로 캡슐화 원칙에 의해 private이라는 접근제한자를 꼭 작성
 	// 필드에 변수를 하나 작성하면, 클래스 안에서 어디에서든 사용 가능
 	private Scanner sc = new Scanner(System.in);
-		//System.in : 자바에서 기본적으로 지정해둔 입력장치(키보드
+		//System.in : 자바에서 기본적으로 지정해둔 입력장치(키보드)
 
 	private Member memberInfo = null; // 가입한 회원의 정보를 저장 할 변수
 	// 자료형 Member이며, memberInfo 라는
@@ -64,7 +64,7 @@ public class MemberService { //클래스
 			System.out.println("2. 로그인");
 			System.out.println("3. 회원 정보 조회");
 			System.out.println("4. 회원 정보 수정");
-			System.out.println("0. 프로그램 종료"); // 왜 0번인지 알아야됨
+			System.out.println("0. 프로그램 종료"); // 왜 0번인지 알아야됨 난 모름
 			
 			System.out.print("매뉴 입력 >>> ");
 			menuNum = sc.nextInt(); // 필드에 작성된 Scanner sc 사용
@@ -73,9 +73,23 @@ public class MemberService { //클래스
 			switch(menuNum) {
 			case 1 : System.out.println(signUp());break;
 			case 2 : System.out.println(login());break; //프린트 안에 써도 되고 안써도 됨 왜? 같은지역이라서..? 대충 그런느낌 알아보기
-			case 3 : break;								// 리턴값이 없는 경우에만 리턴값이 있으면 프린트구문 써줘야됨
-			case 4 : break;
-			case 0 : break;
+			case 3 : System.out.println(selectMember());break;								// 리턴값이 없는 경우에만 리턴값이 있으면 프린트구문 써줘야됨
+			case 4 : 
+			
+				// 회원 정보 수정 메소드 수행 후
+				// 반환되는 결과를 result 변수에 저장
+				int result = updateMember();  // -1 or 1 or 0
+				
+				if( result == -1) {
+					System.out.println("로그인 후 이용 해주세요!");
+				} else if(result == 0) {
+					System.out.println("회원 정보 수정 실패(비밀번호 불일치)");
+				} else { 
+					System.out.println("회원 정보가 수정 되었습니다 :-)");
+				}
+				break;
+				
+			case 0 : System.out.println("프로그램 종료합니다..."); break;
 			default : System.out.println("잘못 입력 하셧습니다. 다시 입력바랍니다");
 			}
 		 
@@ -152,7 +166,71 @@ public class MemberService { //클래스
 	}
 		
 	// 회원정보 조회기능
+	// 아이디, 이름, 나이 만
+	
+	
+	// CRUD ( C:Creat R:Read U:Update D:Delete )
+	public String selectMember() {
+		System.out.println("***** 회원 정보 조회 *****");
+		
+		// 1) 로그인 여부 확인 -> 필드 loginMember가 참조하는 객체가 있는지 확인
+		if(loginMember == null) {
+			return "로그인 후 이용해주세요";  // == 반환형이 string이라 문장 쓸 수 있는거
+		}
+		
+		// 2) 로그인이 되어있는 경우
+		//		회원정보를 출력 할 문자열을 만들어서 반환(return)
+		//		단, 비밀번호는 제외
+		String str = "이름 : " + loginMember.getMemberName();  // 이름 얻어오기
+		str += "\n아이디 : " + loginMember.getMemberId();	  // 아이디 얻어오기
+		str += "\n나이 : " + loginMember.getMemberAge();   // 나이 얻어오기
+		
+		// 이름 : 유저일
+		// 아이디 : user1
+		// 나이 : 50세
+		
+		return str;
+	}
 	// 회원 정보 수정(update) 기능
+	public int updateMember() {
+		
+		System.out.println("\n***** 회원 정보 수정 *****");
+		
+		// 1) 로그인 여부 판별
+		//	로그인이 되어있지않으면 -1 반환  => 그래서 지금 반환형이 int
+		if(loginMember == null) {
+			return -1;
+		}
+		// 2) 수정할 회원 정보 입력 받기(이름, 나이)
+		System.out.print("수정할 이름 입력 : ");
+		String inputName = sc.next();  // 지역변수
+		
+		System.out.print("수정할 나이 입력 : ");
+		int inputAge = sc.nextInt();
+		// sc.next(), sc.nextInt(), sc.nextDouble()
+		// 위에 이런게 입력되어있으면
+		// sc.nextLine()이걸로 정리
+		sc.nextLine();
+		// 입력버퍼에 정리하기
+		
+		// 3) 비밀번호 입력 받아서
+		//		로그인 한 회원의 비밀번호와 일치한지 확인
+		System.out.print("비밀번호 입력 : ");
+		String inputPw = sc.next();
+		
+		// 4) 비밀번호가 같은 경우
+		//		로그인 한 회원의 이름, 나이 정보를 입력받은 값으로 변경 후
+		// 		정상적으로 변경 되었으면 1 반환
+		if(inputPw.equals(loginMember.getMemberPw())) {
+			loginMember.setMemberName(inputName);
+			// 입력받은 inputName을
+			// loginMember가 참조하는 Member 객체의 필드 memberName에 대입
+			loginMember.setMemberAge(inputAge);
+			return 1;
+		} else {
+		// 5) 비밀번호가 다른 경우 0 반환
+			return 0;
+		}
+	}
 
-
-}
+}//

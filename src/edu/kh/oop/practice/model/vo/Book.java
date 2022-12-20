@@ -21,6 +21,7 @@ public class Book { //필드
 		}
 		
 		
+		
 		public String getTitle() {
 			return title;
 		}
